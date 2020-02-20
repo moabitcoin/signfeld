@@ -61,4 +61,4 @@ Trained models are include in the repository [Calzone].
 
 | Name    | Description                                | GTSDB mAP | Remarks                                 |
 | ---     | ---                                        | ---       | ---                                     |
-| Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : pre-trained-models/retinanet |
+| Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : resources/models/retinanet   |
