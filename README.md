@@ -10,7 +10,7 @@ This repository collates our efforts on generating traffic sign detection model 
 * [Installation](#computer-installation)
   - [Conda](#snake-conda) or [Docker](#whale-docker)
 * [Inference only](#tada-usage)
-* [Training](#training)
+* [Training](#train-training)
   - [Neutral images](https://github.com/moabitcoin/Signfeld/blob/master/docs/download.md)
   - [Synthetic data gen](https://github.com/moabitcoin/Signfeld/blob/master/docs/datagen.md)
   - [Detectron training](https://github.com/moabitcoin/Signfeld/blob/master/docs/train.md)
@@ -40,7 +40,9 @@ The following two commands install and run the docker image:
 make docker-install
 make docker-run
 ```
-### :tada: Sample usage
+### :tada: Usage
+
+### :train: Training
 
 ## :rabbit2: Pre-trained German Traffic Sign Model
 Trained models are include in the repository [Calzone].
