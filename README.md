@@ -1,10 +1,12 @@
+<h1 align='center'>:no_pedestrians: Signfeld in PyTorch</h1>
+
 `"Give me a sign!"` - Britney Spears, Circa October 23, 1998
 
 `"Jerry, just remember, it's not a lie if you believe it."`- George Costanza (Seinfeld), Circa July 5, 1989
 
-## :no_bicycles: Traffic sign detection with synthetic data
+## :no_bicycles: Synthetic traffic sign detection
 
-This repository collates our efforts on generating traffic sign detection model in low sample regimes (with little to no human annotations). We leverage templates of known traffic signs to train our detector. We married two ideas of synthetic text & object detection for this work to bear fruit.
+This repository collates our efforts on building traffic sign detection model in low (to zero) sample regimes (with little to no human annotations). We leverage templates of known traffic signs to train our detector. We married the ideas of [synthetic text](https://github.com/ankush-me/SynthText) & [object detection](https://github.com/LCAD-UFES/publications-tabelini-ijcnn-2019) for this work to bear fruit.
 
 # Table of Contents
 * [Installation](#computer-installation)
