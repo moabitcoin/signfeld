@@ -36,7 +36,7 @@ make docker-run
 A subset of the near complete [list](https://de.wikipedia.org/wiki/Bildtafel_der_Verkehrszeichen_in_der_Bundesrepublik_Deutschland_seit_2017) of German traffic sign(s) is of interest to us. More specifically [these](https://github.com/moabitcoin/Signfeld/tree/master/synthetic_signs/templates). These signs form a subset (signs of interest) which formalise [`turn-restrictions`](https://wiki.openstreetmap.org/wiki/Relation:restriction) in OSM. Using the templates for the signs of interest we build a synthetic training set following the idea presented in [IJCN2019](https://github.com/LCAD-UFES/publications-tabelini-ijcnn-2019) and [CVPR 2016](https://github.com/ankush-me/SynthText).
 
 ## :innocent: Neutral images
-For the next steps we'd need images which do not contain any known traffic signs. We leverage [OpenimagesV5](https://storage.googleapis.com/openimages/web/index.html) and build a neutral image set by querying for [`Building`](https://storage.googleapis.com/openimages/web/visualizer/index.html?set=train&type=detection&c=%2Fm%2F0cgh4) and filtering out images containing [`traffic signs`](https://storage.googleapis.com/openimages/web/visualizer/index.html?set=train&type=detection&c=%2Fm%2F01mqdt), referred below as `Building_without_signs.list`. Please refer to instructions on [Figure8.](https://www.figure-eight.com/dataset/open-images-annotated-with-bounding-boxes/). Please download the following file(s) and place them under `synthetic_signs/external/lists` and zips:
+For the next steps we'd need images which do not contain any known traffic signs. We leverage [OpenimagesV5](https://storage.googleapis.com/openimages/web/index.html) and build a neutral image set by querying for [`Building`](https://storage.googleapis.com/openimages/web/visualizer/index.html?set=train&type=detection&c=%2Fm%2F0cgh4) and filtering out images containing [`traffic signs`](https://storage.googleapis.com/openimages/web/visualizer/index.html?set=train&type=detection&c=%2Fm%2F01mqdt), referred below as `Building_without_signs.list`. Please refer to instructions on [Figure8.](https://www.figure-eight.com/dataset/open-images-annotated-with-bounding-boxes/). Please download the following file(s) and place them under `synthetic_signs/external/lists`:
 - [train-annotations-bbox.csv](https://datasets.figure-eight.com/figure_eight_datasets/open-images/train-annotations-bbox.csv)
 - [validation-annotations-bbox.csv](https://datasets.figure-eight.com/figure_eight_datasets/open-images/validation-annotations-bbox.csv)
 - [test-annotations-bbox.csv](https://datasets.figure-eight.com/figure_eight_datasets/open-images/test-annotations-bbox.csv)
@@ -62,9 +62,9 @@ python scripts/download-openimages-v5.py --classes 'Building,Traffic_sign,Traffi
 ```
 Build class list and filter image set & Filtering for outdoor images with no labeled signs.
 ```
-ls path_to_openimages_v5/Building/* > synthetic_signs/external/lists/Building.list
-ls path_to_openimages_v5/Traffic_sign/* > synthetic_signs/external/lists/Traffic_sign.list
-ls path_to_openimages_v5/Traffic_light/* > synthetic_signs/external/lists/Traffic_light.list
+find path_to_openimages_v5/Building -type f -name '*.jpg' > synthetic_signs/external/lists/Building.list
+find path_to_openimages_v5/Traffic_sign -type f -name '*.jpg > synthetic_signs/external/lists/Traffic_sign.list
+find path_to_openimages_v5/Traffic_light -type f -name '*.jpg > synthetic_signs/external/lists/Traffic_light.list
 ```
 
 ## :factory: Generate synthetic data
@@ -101,7 +101,7 @@ The following example generates a dataset of 2M images. The file [augmentations.
 ```
 generate-synthetic-dataset --backgrounds=synthetic_signs/external/lists/Building_without_signs.list \
                            --templates-path=synthetic_signs/templates \
-                           --out-path=experiments/signfeld-dataset \
+                           --out-path=experiments/synthetic-signfeld-dataset \
                            --n=16 \
                            --max-images=200000 \
                            --augmentations=resources/configs/augmentations.yaml
@@ -122,12 +122,12 @@ optional arguments:
 ```
 Based on example dataset generation command from the previous section, you can generate separate training and validation splits using the following command:
 ```
-generate-train-vali-splits -s 20 experiments/signfeld-dataset/multiclass.csv
+generate-train-vali-splits -s 20 experiments/synthetic-signfeld-dataset/multiclass.csv
 ```
 This command splits off 20% (specified by ``-s 20``) of the dataset for validation and uses the rest for training. The following two files contain the data splits:
 ```
-ls experiments/signfeld-dataset/multiclass_train.csv
-ls experiments/signfeld-dataset/multiclass_valid.csv
+ls experiments/synthetic-signfeld-dataset/multiclass_train.csv
+ls experiments/synthetic-signfeld-dataset/multiclass_valid.csv
 ```
 
 ## :bullettrain_side: Train a model
@@ -168,15 +168,15 @@ Following previous sections, we may use the following commands to train a Retina
 ```
 train-synthetic-sign-detector --config-file resources/configs/signs_169_retinanet_R_50_FPN_3x.yaml \
                               --label-map=resources/labels/synthetic-signs-169.yaml \
-                              --train-csv=experiments/signfeld-dataset/multiclass_train.csv \
-                              --valid-csv=experiments/signfeld-dataset/multiclass_valid.csv \
-                              OUTPUT_DIR experiments/signfeld-dataset/logs
+                              --train-csv=experiments/synthetic-signfeld-dataset/multiclass_train.csv \
+                              --valid-csv=experiments/synthetic-signfeld-dataset/multiclass_valid.csv \
+                              OUTPUT_DIR experiments/synthetic-signfeld-dataset/logs
 ```
 The configuration file [signs_169_retinanet_R_50_FPN_3x.yaml](resources/configs/signs_169_retinanet_R_50_FPN_3x.yaml) contains model hyperparameters and a configuration of the training process. Note that you must leave the DATASETS section of this configuration file empty when you are training with the provided script. It will be filled out by the trainer itself based on the provided ``--train-csv`` and ``--valid-csv`` arguments. The label map [synthetic-signs-169.yaml](resources/labels/synthetic-signs-169.yaml) contains the mapping from class ID to class name. If you change the template set you can re-generate it using [generate-label-map](bin/generate-label-map).
 
 Training can be monitored using tensorboard. Following previous example commands:
 ```
-tensorboard --logdir experiments/signfeld-dataset/logs
+tensorboard --logdir experiments/synthetic-signfeld-dataset/logs
 ```
 
 ## :trophy: Evaluation on [GTSDB](http://benchmark.ini.rub.de/?section=gtsdb&subsection=dataset)
@@ -198,8 +198,8 @@ Use the script [detect-synthetic-signs](bin/detect-synthetic-signs) to generate 
 detect-synthetic-signs --images=<path_to_gtsdb>/*.ppm \
                        --label-map=resources/labels/synthetic-signs-169.yaml \
                        --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
-                       --config=experiments/signfeld-dataset/logs/config.yaml \
-                       --weights=experiments/signfeld-dataset/logs/model_final.pth \
+                       --config=experiments/synthetic-signfeld-dataset/logs/config.yaml \
+                       --weights=experiments/synthetic-signfeld-dataset/logs/model_final.pth \
                        --output_dir=/tmp/gtsdb-evaluation/detections-signfeld
 ```
 In addition to the detectors configuration (``--config``), weights (``--weights``) and label map (``--label-map``), we also supply the label map of the GTSDB dataset (``--target-label-map``). By supplying a target label map, the script suppresses all detections which are of a class which is not part of the GTSDB dataset. Otherwise, they would be counted as false alarms during evaluation.
