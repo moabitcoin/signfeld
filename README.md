@@ -15,9 +15,10 @@ This repository collates our efforts on generating traffic sign detection model 
   - [Synthetic data gen](https://github.com/moabitcoin/Signfeld/blob/master/docs/datagen.md)
   - [Detectron training](https://github.com/moabitcoin/Signfeld/blob/master/docs/train.md)
 * [Evaluation](https://github.com/moabitcoin/Signfeld/blob/master/docs/evaluate.md)
+
 ## :computer: Installation
 
-You can either install the code in a virtual environment or docker. Use the docker if you want a reproducable environment.
+You can either install the code in a virtual environment or docker. Use the docker if you want a reproducible environment.
 
 ### :snake: Conda
 
@@ -42,11 +43,20 @@ make docker-run
 ```
 ### :tada: Usage
 
-### :train: Training
+Download the pre-trained models from [here]() at `pretrained_models/retinanet`.
+
+```
+detect-synthetic-signs --images=<path to test images> \
+                       --label-map=resources/labels/synthetic-signs-169.yaml \
+                       --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
+                       --config=pretrained_models/retinanet/config.yaml \
+                       --weights=pretrained_models/retinanet/model_final.pth \
+                       --output_dir=/tmp/signfeld
+```
 
 ## :rabbit2: Pre-trained German Traffic Sign Model
 Trained models are include in the repository [Calzone].
 
-| Name    | Description                                | GTSDB mAP | Remarks                               |
-| ---     | ---                                        | ---       | ---                                   |
-| Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : pre-trained-models/Calzone |
+| Name    | Description                                | GTSDB mAP | Remarks                                 |
+| ---     | ---                                        | ---       | ---                                     |
+| Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : pre-trained-models/retinanet |
