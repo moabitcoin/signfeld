@@ -1,6 +1,6 @@
 `"Give me a sign!"` - Britney Spears, Circa October 23, 1998
 
-`"Jerry, just remember, it's not a lie if you believe it."`- George Costanza (Seinfeld)
+`"Jerry, just remember, it's not a lie if you believe it."`- George Costanza (Seinfeld), Circa July 5, 1989
 
 ## :no_bicycles: Traffic sign detection with synthetic data
 
