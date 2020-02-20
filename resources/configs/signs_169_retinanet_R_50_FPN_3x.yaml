@@ -1,0 +1,29 @@
+_BASE_: "base/retinanet_R_50_FPN_3x.yaml"
+VERSION: 2
+MODEL:
+  WEIGHTS: "resources/weights/signs_init_retinanet_R_50_FPN_3x.pkl"
+  BACKBONE:
+    FREEZE_AT: 2
+  RETINANET:
+    NUM_CLASSES: 169
+  ANCHOR_GENERATOR:
+    ANGLES: [0]
+    SIZES: !!python/object/apply:eval ["[[x, x * 2**(1.0/3), x * 2**(2.0/3) ] for x in [16, 32, 64, 128, 256]]"]
+INPUT:
+  MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)
+  MIN_SIZE_TEST: 800
+  MAX_SIZE_TRAIN: 1360
+  MAX_SIZE_TEST: 1360
+DATASETS:
+  TRAIN: ()
+  TEST: ()
+SOLVER:
+  IMS_PER_BATCH: 2
+  BASE_LR: 0.02
+  MOMENTUM: 0.9
+  WEIGHT_DECAY: 0.0001
+  STEPS: (80000, )
+  MAX_ITER: 100000
+  CHECKPOINT_PERIOD: 10000
+TEST:
+  EVAL_PERIOD: 200000

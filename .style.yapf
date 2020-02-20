@@ -1,0 +1,10 @@
+[style]
+blank_line_before_nested_class_or_def = True
+blank_lines_around_top_level_definition = 2
+continuation_align_style = space
+column_limit = 80
+indent_width = 2
+spaces_around_power_operator = False
+spaces_around_default_or_named_assign = False
+spaces_before_comment = 2
+use_tabs = False

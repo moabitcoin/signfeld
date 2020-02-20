@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+from synthetic_signs import trainer
+
+if __name__ == "__main__":
+  trainer.main(trainer.parse_args())

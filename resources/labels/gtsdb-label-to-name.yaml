@@ -1,0 +1,45 @@
+# This file maps from GTSDB dataset label to our own labels (which are template
+# filenames).
+0: "274-20"   # speed limit 20
+1: "274-30"   # speed limit 30
+2: "274-50"   # speed limit 50
+3: "274-60"   # speed limit 60
+4: "274-70"   # speed limit 70
+5: "274-80"   # speed limit 80
+6: "none"     # restriction ends 80 (other)
+7: "none"     # speed limit 100
+8: "none"     # speed limit 120
+9: "276"      # no overtaking
+10: "277"     # no overtaking (trucks)
+11: "301"     # priority at next intersection
+12: "306"     # priority road
+13: "205"     # give way
+14: "206"     # stop
+15: "250"     # no traffic both ways
+16: "none"    # no trucks
+17: "267"     # no entry
+18: "101"     # danger
+19: "103-10"  # bend left
+20: "103-20"  # bend right
+21: "105-10"  # bend
+22: "112"     # uneven road
+23: "114"     # slippery road
+24: "121-10"  # road narrows
+25: "123"     # construction
+26: "131"     # traffic signal
+27: "133-10"  # pedestrian crossing
+28: "136-10"  # school crossing
+29: "138-10"  # bicycle crossing
+30: "145-53"  # snow
+31: "142-10"  # animals
+32: "282"     # restriction ends
+33: "209"     # go right
+34: "209-10"  # go left
+35: "209-30"  # go straight
+36: "214"     # go right or straight
+37: "214-10"  # go left or straight
+38: "222-20"  # keep right
+39: "222-10"  # keep left
+40: "215"     # roundabout
+41: "280"     # restrition ends (overtaking)
+42: "281"     # restriction ends (overtaking (trucks))

@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+import argparse
+import collections
+import json
+import os
+import pathlib
+import shutil
+
+from PIL import Image
+from tqdm import tqdm
+
+DetectionData = collections.namedtuple(
+    "DetectionData", ["x1", "y1", "x2", "y2", "score", "category"])
+
+FrameData = collections.namedtuple("FrameData",
+                                   ["filename", "timestamp", "detections"])
+
+
+def main(args):
+  with args.sensor_annotations.open() as file_handle:
+    sensor_annotations = json.load(file_handle)
+    sensor_annotations = sensor_annotations["sensor_annotation"]
+
+  frame_data = []
+
+  for sensor_annotation in sensor_annotations:
+    filename = args.image_dir.joinpath("{}.jpg".format(
+        sensor_annotation["sensor_data_token"]))
+    timestamp = sensor_annotation["timestamp"]
+
+    detections = []
+    for detection_dict in sensor_annotation["annotation_resource_2d_bbox"]:
+      detections.append(
+          DetectionData(x1=detection_dict["xmin"],
+                        y1=detection_dict["ymin"],
+                        x2=detection_dict["xmax"],
+                        y2=detection_dict["ymax"],
+                        score=detection_dict["score"],
+                        category=detection_dict["class"]))
+
+    frame_data.append(
+        FrameData(filename=filename, timestamp=timestamp,
+                  detections=detections))
+
+  if args.filter_empty:
+    frame_data = list(filter(lambda x: len(x.detections) > 0, frame_data))
+  frame_data = sorted(frame_data, key=lambda x: x.timestamp)
+
+  args.destination.mkdir(parents=True, exist_ok=False)
+  output_image_dir = args.destination.joinpath("images")
+  output_detection_dir = args.destination.joinpath("detections")
+
+  output_image_dir.mkdir()
+  output_detection_dir.mkdir()
+
+  progress_bar = tqdm(frame_data)
+  for i, frame_data_i in enumerate(progress_bar):
+    image_extension = frame_data_i.filename.suffix
+    image_stem = frame_data_i.filename.stem
+    image_filename = output_image_dir.joinpath("{:06d}_{}{}".format(
+        i, image_stem, image_extension))
+    shutil.copy(frame_data_i.filename, image_filename)
+
+    width, height = Image.open(image_filename).size
+
+    detection_filename = output_detection_dir.joinpath("{:06d}_{}.txt".format(
+        i, image_stem))
+    with detection_filename.open(mode="w") as file_handle:
+      for detection in frame_data_i.detections:
+        x1, y1 = int(detection.x1 * width), int(detection.y1 * height)
+        x2, y2 = int(detection.x2 * width), int(detection.y2 * height)
+
+        line = " ".join(
+            str(x)
+            for x in (detection.category, detection.score, x1, y1, x2, y2))
+        file_handle.write(line + os.linesep)
+
+
+def parse_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--image-dir",
+                      required=True,
+                      type=pathlib.Path,
+                      help="Path to image directory.")
+  parser.add_argument("--sensor-annotations",
+                      required=True,
+                      type=pathlib.Path,
+                      help="Path to sensor annotations file.")
+  parser.add_argument("--destination",
+                      required=True,
+                      type=pathlib.Path,
+                      help="Path to output directory.")
+  parser.add_argument(
+      "--filter-empty",
+      action="store_true",
+      help="If given, only exports images with at least one detection.")
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  main(parse_args())

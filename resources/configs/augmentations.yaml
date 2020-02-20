@@ -1,0 +1,35 @@
+brightness_bias_lo: !!float -60.0
+brightness_bias_hi: !!float 120.0
+brightness_scale_lo: !!float 0.75
+brightness_scale_hi: !!float 1.25
+lighting_gain_lo: !!int -100
+lighting_gain_hi: !!int 100
+saturation_gain_lo: !!int -200
+saturation_gain_hi: !!int 100
+perspective_rate_lo: !!float 0.0
+perspective_rate_hi: !!float 0.2
+rotation_angle_deg_lo: !!float -10.0
+rotation_angle_deg_hi: !!float 10.0
+scale_factor_lo: !!float 0.05
+scale_factor_hi: !!float 1.00
+noise_magnitude_lo: !!int 1
+noise_magntidue_hi: !!int 30
+noise_probability: !!float 1.0
+blur_stddev_lo: !!float 0.5
+blur_stddev_hi: !!float 4.0
+blur_probability: !!float 0.8
+num_signs_in_image_lo: !!int 1
+num_signs_in_image_hi: !!int 15
+num_distractors_in_image_lo: !!int 1
+num_distractors_in_image_hi: !!int 15
+pixelate_factor_min: !!float 0.2
+pixelate_factor_max: !!float 0.8
+pixelate_probability: !!float 0.5
+cutout_size_lo: !!float 0.1
+cutout_size_hi: !!float 0.5
+cutout_probability: !!float 0.8
+blend_mode_exclude: []
+template_exclude_rotation: []
+template_exclude_blur: []
+template_exclude_perspective: []
+template_exclude_scaling: []

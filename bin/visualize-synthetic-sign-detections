@@ -1,0 +1,181 @@
+#!/usr/bin/env python
+import argparse
+import glob
+import logging
+import os
+import pathlib
+
+import cv2
+import numpy as np
+import torch
+import torchvision
+from tqdm import tqdm
+
+try:
+  import synthetic_signs
+except ModuleNotFoundError:
+  # Looks like we are executing directly from the repository.
+  import os
+  import sys
+  sys.path.append(
+      os.path.realpath(os.path.join(os.path.dirname(__file__), "..")))
+  import synthetic_signs
+
+GROUNDTRUTH_SCORE = 1.0
+
+DETECTION_COLOR_BGR = 0, 0, 255
+LINE_THICKNESS = 2
+TEXT_THICKNESS = 2
+
+
+def read_detection_file(filename, min_confidence):
+  boxes, scores, categories = [], [], []
+
+  with open(filename, "r") as file_handle:
+    for line in file_handle:
+      detection_data = line.rstrip().split(' ')
+      if len(detection_data) == 0 or len(detection_data[0]) == 0:
+        continue  # Skip empty lines.
+
+      if len(detection_data) == 6:
+        # This is a detection file with confidence score.
+        category, score, x0, y0, x1, y1 = line.rstrip().split(' ')
+        if float(score) < min_confidence:
+          continue
+
+        boxes.append(((int(x0), int(y0), int(x1), int(y1))))
+        scores.append(float(score))
+        categories.append(category)
+      elif len(detection_data) == 5:
+        # This is a groundturth file without confidence score.
+        category, x0, y0, x1, y1 = line.rstrip().split(' ')
+        boxes.append(((int(x0), int(y0), int(x1), int(y1))))
+        scores.append(GROUNDTRUTH_SCORE)
+        categories.append(category)
+      else:
+        raise ValueError('Invalid detection output')
+
+  boxes = np.asarray(boxes).reshape(-1, 4)
+  scores = np.asarray(scores).reshape(-1)
+  return boxes, scores, categories
+
+
+def draw_detection_box(image, x0, y0, x1, y1):
+  pt1 = int(x0), int(y0)
+  pt2 = int(x1), int(y1)
+  cv2.rectangle(image, pt1, pt2, DETECTION_COLOR_BGR, LINE_THICKNESS)
+
+
+def annotate_category_name(image, category, x0, y0, x1, y1):
+  text_size = cv2.getTextSize(category, cv2.FONT_HERSHEY_PLAIN, 1,
+                              TEXT_THICKNESS)
+
+  pt1 = int(x0), int(y0)
+  pt2 = int(x1), int(y1)
+  pt1 = pt1[0] - 10 - text_size[0][0], pt1[1]
+  pt2 = pt1[0] + 10 + text_size[0][0], pt1[1] + 10 + text_size[0][1]
+  cv2.rectangle(image, pt1, pt2, DETECTION_COLOR_BGR, -1)
+
+  center = pt1[0] + 5, pt1[1] + 5 + text_size[0][1]
+  cv2.putText(image, category, center, 1, cv2.FONT_HERSHEY_PLAIN,
+              (255, 255, 255), TEXT_THICKNESS)
+
+
+def annotate_template_image(image, template_bgra, x0, y0, x1, y1):
+  scale_factor = float(y1 - y0) / template_bgra.shape[0]
+  template_bgra = cv2.resize(template_bgra, (0, 0),
+                             fx=scale_factor,
+                             fy=scale_factor)
+
+  offset = int(y0), int(x0 - template_bgra.shape[1])
+  template_bgra, offset = synthetic_signs.utils.clip_image_at_border(
+      template_bgra, image.shape[:2], offset)
+
+  image[:, :, :] = synthetic_signs.blending.paste_to(template_bgra[:, :, :3],
+                                                     template_bgra[:, :, 3],
+                                                     image, offset)
+
+
+def main(args):
+  os.makedirs(args.destination, exist_ok=False)
+
+  # Load templates into memory.
+  name_to_image = dict()
+  if args.template_dir is not None:
+    for filepath in args.template_dir.iterdir():
+      image_bgra = cv2.imread(str(filepath), cv2.IMREAD_UNCHANGED)
+      assert image_bgra.ndim == 3 and image_bgra.shape[-1] == 4
+
+      image_bgra, _ = synthetic_signs.utils.remove_padding(
+          image_bgra, image_bgra[:, :, 3])
+
+      name, _ = os.path.splitext(filepath.name)
+      name_to_image[name] = image_bgra
+
+  # Process each image in the glob pattern.
+  image_filenames = sorted(glob.glob(args.images))
+  progress_bar = tqdm(image_filenames)
+
+  for image_filename in progress_bar:
+    image = cv2.imread(image_filename, cv2.IMREAD_COLOR)
+
+    name, _ = os.path.splitext(os.path.basename(image_filename))
+    detection_filename = os.path.join(args.detections, "{}.txt".format(name))
+
+    if not os.path.exists(detection_filename):
+      logging.warning("Missing detection file '{}'".format(detection_filename))
+      continue
+
+    boxes, scores, categories = read_detection_file(detection_filename,
+                                                    args.min_confidence)
+
+    keep = torchvision.ops.nms(torch.tensor(boxes, dtype=torch.float),
+                               torch.tensor(scores, dtype=torch.float),
+                               iou_threshold=args.max_box_overlap).numpy()
+
+    boxes = boxes[keep]
+    scores = scores[keep]
+    categories = [categories[i] for i in keep]
+
+    for (x0, y0, x1, y1), score, category in zip(boxes, scores, categories):
+      draw_detection_box(image, x0, y0, x1, y1)
+
+      template_bgra = name_to_image.get(category, None)
+      if template_bgra is None:
+        annotate_category_name(image, category, x0, y0, x1, y1)
+      else:
+        annotate_template_image(image, template_bgra, x0, y0, x1, y1)
+
+    output_filename = os.path.join(args.destination, "{}.jpg".format(name))
+    cv2.imwrite(output_filename, image)
+
+
+def parse_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--images", required=True, help="Image glob pattern.")
+  parser.add_argument("--detections",
+                      required=True,
+                      type=pathlib.Path,
+                      help="Path to detection output/ground truths.")
+  parser.add_argument("--destination",
+                      required=True,
+                      type=pathlib.Path,
+                      help="Visualization is stored in this directory.")
+  parser.add_argument(
+      "--min-confidence",
+      type=float,
+      default=0.5,
+      help="Only visualize detections with confidence larger or equal to this"
+      "number.")
+  parser.add_argument("--max-box-overlap",
+                      type=float,
+                      default=0.5,
+                      help="Non maximum suppression threshold.")
+  parser.add_argument("--template-dir",
+                      type=pathlib.Path,
+                      help="Path to templates")
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  main(parse_args())

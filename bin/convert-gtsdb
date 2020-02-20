@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+import argparse
+import os
+import pathlib
+import yaml
+
+NUM_IMAGES_IN_DATASET = 900
+
+
+class IdentityMapping:
+
+  def __getitem__(self, x):
+    return str(x)
+
+
+def main(args):
+  name_to_detections = {
+      "{:05}".format(i): []
+      for i in range(NUM_IMAGES_IN_DATASET)
+  }
+
+  if args.gtsdb_label_map:
+    with args.gtsdb_label_map.open() as file_handle:
+      id_to_classname = yaml.safe_load(file_handle)
+  else:
+    id_to_classname = IdentityMapping()
+
+  if args.detection_label_map is not None:
+    with args.detection_label_map.open() as file_handle:
+      detection_id_to_name = yaml.safe_load(file_handle)
+      detection_classnames = set(detection_id_to_name.keys())
+  else:
+    detection_classnames = None
+
+  with args.input_filename.open() as file_handle:
+    for line in file_handle:
+      name, x0, y0, x1, y1, class_id = line.rstrip().split(';')
+      class_name = id_to_classname[int(class_id)]
+
+      keep_detection = (detection_classnames is None
+                        or class_name in detection_classnames)
+      if not keep_detection:
+        continue
+
+      name = os.path.splitext(name)[0]
+      detection_str = " ".join((class_name, x0, y0, x1, y1))
+      name_to_detections[name].append(detection_str)
+
+  os.makedirs(args.output_directory, exist_ok=False)
+  for name, detection_list in name_to_detections.items():
+    output_filepath = args.output_directory.joinpath("{}.txt".format(name))
+    with output_filepath.open(mode="w") as file_handle:
+      file_handle.write(os.linesep.join(detection_list) + os.linesep)
+
+
+def parse_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("input_filename",
+                      type=pathlib.Path,
+                      help="Path to GTSDB ground truth file.")
+  parser.add_argument("output_directory",
+                      type=pathlib.Path,
+                      help="Path to output directory.")
+  parser.add_argument(
+      "--gtsdb-label-map",
+      type=pathlib.Path,
+      help="YAML file that maps from GTSDB class ID to class name.")
+  parser.add_argument(
+      "--detection-label-map",
+      type=pathlib.Path,
+      help="YAML file that maps from detector class ID to class name. "
+      "Used to filter objects from ground truth which cannot be detected.")
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  main(parse_args())

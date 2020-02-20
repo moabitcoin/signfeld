@@ -1,0 +1,8 @@
+# Ignore everything apart from Dockerfile itself.
+**
+!/Dockerfile
+!/requirements.txt
+!/setup.py
+!/bin/**
+!/synthetic_signs/**
+!/test/**

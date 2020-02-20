@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import argparse
+import os
+import pathlib
+import yaml
+
+
+def main(args):
+  filenames = sorted(os.listdir(args.template_dir))
+
+  id_to_name = dict()
+  for i, filename in enumerate(filenames):
+    name, _ = os.path.splitext(filename)
+    id_to_name[i] = name
+
+  with args.destination.open(mode="w") as file_handle:
+    yaml.dump(id_to_name, file_handle, default_flow_style=False)
+
+
+def parse_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("template_dir",
+                      help="Path to template image directory.")
+  parser.add_argument("destination",
+                      type=pathlib.Path,
+                      help="Output label map path.")
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  main(parse_args())

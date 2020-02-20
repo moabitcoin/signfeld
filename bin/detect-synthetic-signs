@@ -1,0 +1,138 @@
+#!/usr/bin/env python
+import argparse
+import collections
+import glob
+import os
+import pathlib
+import torch
+import yaml
+
+import cv2
+import numpy as np
+from tqdm import tqdm
+
+from detectron2.config import get_cfg
+from detectron2.engine import DefaultPredictor
+from detectron2.structures import Boxes
+
+BATCH_SIZE = 1
+
+FilenameAndImage = collections.namedtuple("FilenameAndImage",
+                                          ["filename", "bgr_image"])
+
+
+class ImageDataset(torch.utils.data.Dataset):
+
+  def __init__(self, filenames):
+    super().__init__()
+    self.filenames = filenames
+
+  def __len__(self):
+    return len(self.filenames)
+
+  def __getitem__(self, index):
+    filename = self.filenames[index]
+    bgr_image = cv2.imread(filename, cv2.IMREAD_COLOR)
+    return FilenameAndImage(filename=filename, bgr_image=bgr_image)
+
+
+def main(args):
+  os.makedirs(args.output_dir, exist_ok=False)
+
+  with args.label_map.open() as file_handle:
+    id_to_name = yaml.safe_load(file_handle)
+
+  if args.target_label_map is not None:
+    with args.target_label_map.open() as file_handle:
+      target_id_to_name = yaml.safe_load(file_handle)
+    target_classnames = set(target_id_to_name.values())
+  else:
+    target_classnames = None
+
+  cfg = get_cfg()
+  cfg.merge_from_file(args.config)
+  cfg.MODEL.WEIGHTS = args.weights
+  cfg.freeze()
+
+  predictor = DefaultPredictor(cfg)
+
+  image_filenames = glob.glob(args.images)
+  dataset = ImageDataset(image_filenames)
+  dataloader = torch.utils.data.DataLoader(dataset,
+                                           batch_size=BATCH_SIZE,
+                                           num_workers=args.workers,
+                                           collate_fn=lambda x: x)
+
+  with tqdm(total=len(dataloader)) as progress_bar:
+    for filename_and_image, in dataloader:
+      # TODO(niwojke): All official model configurations that I have seen so
+      # far use BGR inputs. Format conversion would be nice nonetheless.
+      assert cfg.INPUT.FORMAT == "BGR", "Input file format missmatch"
+      outputs = predictor(filename_and_image.bgr_image)
+
+      boxes = outputs["instances"].pred_boxes
+      classes = outputs["instances"].pred_classes
+      scores = outputs["instances"].scores
+
+      detections = []
+      for i in range(len(boxes)):
+        class_name = id_to_name.get(classes[i].item(), None)
+        if class_name is None:
+          print("WARNING: Unknown class {}".format(classes[i]))
+
+        ignore_class = (target_classnames is not None
+                        and class_name not in target_classnames)
+        ignore_score = scores[i] < args.min_confidence
+
+        if ignore_class or ignore_score:
+          continue
+
+        x0, y0, x1, y1 = boxes.tensor[i].detach().cpu().numpy().astype(np.int)
+        score = "{:01.2f}".format(scores[i])
+
+        detection_data = (class_name, score, str(x0), str(y0), str(x1), str(y1))
+        detections.append(" ".join(detection_data))
+
+      name = os.path.splitext(os.path.basename(filename_and_image.filename))[0]
+      detection_filepath = args.output_dir.joinpath("{}.txt".format(name))
+      with detection_filepath.open(mode="w") as file_handle:
+        file_handle.write(os.linesep.join(detections) + os.linesep)
+
+      progress_bar.update()
+
+
+def parse_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--images", required=True, help="Image glob pattern.")
+  parser.add_argument(
+      "--label-map",
+      required=True,
+      type=pathlib.Path,
+      help="Path to YAML label file that maps from class ID to class name.")
+  parser.add_argument(
+      "--target-label-map",
+      type=pathlib.Path,
+      help="An optional YAML file which maps from target dataset class ID to "
+      "class name. If provided, only generates detections of classes which are "
+      " present in the target dataset.")
+  parser.add_argument(
+      "--min-confidence",
+      type=float,
+      default=0.0,
+      help="Only write detections with confidence larger or equal to "
+      "this value.")
+  parser.add_argument("--config", required=True, help="Path to model config.")
+  parser.add_argument("--weights", required=True, help="Path to model weights.")
+  parser.add_argument("--output-dir",
+                      required=True,
+                      type=pathlib.Path,
+                      help="Output directory.")
+  parser.add_argument("--workers",
+                      type=int,
+                      default=2,
+                      help="Number of data loader proceses.")
+  return parser.parse_args()
+
+
+if __name__ == "__main__":
+  main(parse_args())
