@@ -1,5 +1,7 @@
 `"Give me a sign!"` - Britney Spears, Circa October 23, 1998
 
+`"Jerry, just remember, it's not a lie if you believe it."`- George Costanza (Seinfeld)
+
 ## :no_bicycles: Traffic sign detection with synthetic data
 
 This repository collates our efforts on generating traffic sign detection model in low sample regimes (with little to no human annotations). We leverage templates of known traffic signs to train our detector. We married two ideas of synthetic text & object detection for this work to bear fruit.
