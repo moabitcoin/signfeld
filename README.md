@@ -29,7 +29,6 @@ The following two commands install and run the docker image:
 make docker-install
 make docker-run
 ```
-
 ## :no_pedestrians: Traffic sign templates
 
 A subset of the near complete [list](https://de.wikipedia.org/wiki/Bildtafel_der_Verkehrszeichen_in_der_Bundesrepublik_Deutschland_seit_2017) of German traffic sign(s) is of interest to us. More specifically [these](https://github.com/moabitcoin/Signfeld/tree/master/synthetic_signs/templates). These signs form a subset (signs of interest) which formalise [`turn-restrictions`](https://wiki.openstreetmap.org/wiki/Relation:restriction) in OSM. Using the templates for the signs of interest we build a synthetic training set following the idea presented in [IJCN2019](https://github.com/LCAD-UFES/publications-tabelini-ijcnn-2019) and [CVPR 2016](https://github.com/ankush-me/SynthText).
@@ -39,17 +38,11 @@ For the next steps we'd need images which do not contain any known traffic signs
 - [train-annotations-bbox.csv](https://datasets.figure-eight.com/figure_eight_datasets/open-images/train-annotations-bbox.csv)
 - [validation-annotations-bbox.csv](https://datasets.figure-eight.com/figure_eight_datasets/open-images/validation-annotations-bbox.csv)
 - [test-annotations-bbox.csv](https://datasets.figure-eight.com/figure_eight_datasets/open-images/test-annotations-bbox.csv)
-- [train_01.zip](https://datasets.figure-eight.com/figure_eight_datasets/open-images/zip_files_copy/train_01.zip)
 
-### Neutral image list gen
+### :neutral_face: Neutral images list gen
 
 ```
 python scripts/download-openimages-v5.py --help
-usage: download-openimages-v5.py [-h] --mode MODE --classes CLASSES
-                                 [--nthreads NTHREADS] --dest DEST --csvs CSVS
-                                 [--limit LIMIT] [--occluded] [--truncated]
-                                 [--groupOf] [--depiction] [--inside]
-
 Download Class specific images from OpenImagesV5
 
 optional arguments:
@@ -61,26 +54,21 @@ optional arguments:
   --csvs CSVS          CSV file(s) directory
   --limit LIMIT        Cap downloaded files to limit
 ```
-
+Sample command
 ```
-python scripts/download-openimages-v5.py --classes 'Building,Traffic_sign,Traffic_light' --mode train --dest <Directory for OpenImagesV5> --csvs <path to Signfeld>/synthetic_signs/external/lists
+python scripts/download-openimages-v5.py --classes 'Building,Traffic_sign,Traffic_light' --mode train --dest <path_to_openimages_v5> --csvs synthetic_signs/external/lists
+```
+Build class list and filter image set & Filtering for outdoor images with no labeled signs.
+```
+ls path_to_openimages_v5/Building/* > synthetic_signs/external/lists/Building.list
+ls path_to_openimages_v5/Traffic_sign/* > synthetic_signs/external/lists/Traffic_sign.list
+ls path_to_openimages_v5/Traffic_light/* > synthetic_signs/external/lists/Traffic_light.list
 ```
 
 ## :factory: Generate synthetic data
 
 Use [generate-synthetic-dataset](bin/generate-synthetic-dataset) to generate a synthetic sign dataset:
 ```
-usage: generate-synthetic-dataset [-h] --backgrounds BACKGROUNDS
-                                   --templates-path TEMPLATES_PATH
-                                   --augmentations AUGMENTATIONS
-                                   [--distractors-path DISTRACTORS_PATH]
-                                   [--random-distractors RANDOM_DISTRACTORS]
-                                   --out-path OUT_PATH --max-images
-                                   MAX_IMAGES [--n JOBS]
-                                   [--max-template-size MAX_TEMPLATE_SIZE]
-                                   [--min-template-size MIN_TEMPLATE_SIZE]
-                                   [--background-size BACKGROUND_SIZE]
-
 optional arguments:
   -h, --help            show this help message and exit
   --backgrounds BACKGROUNDS
@@ -109,9 +97,9 @@ optional arguments:
 ```
 The following example generates a dataset of 2M images. The file [augmentations.yaml](resources/configs/augmentations.yaml) specifies augmentation parameters (geometric template distortion, blending methods, etc.). Refer to the documentation of ``generate_task_args()`` in [synthetic_signs.dataset_generator](synthetic_signs/dataset_generator.py#268) for a parameter description.
 ```
-generate-synthetic-dataset --backgrounds=lists/Building_without_signs.list \
+generate-synthetic-dataset --backgrounds=synthetic_signs/external/lists/Building_without_signs.list \
                            --templates-path=synthetic_signs/templates \
-                           --out-path=experiments/dataset-02-11-2019-200K \
+                           --out-path=experiments/signfeld-dataset \
                            --n=16 \
                            --max-images=200000 \
                            --augmentations=resources/configs/augmentations.yaml
@@ -130,28 +118,20 @@ optional arguments:
   -h, --help    show this help message and exit
   -s S          Percentage of data to split off for validation
 ```
-Based on example dataset generation command from the previous section, you can generate separate training and validtion splits using the following command:
+Based on example dataset generation command from the previous section, you can generate separate training and validation splits using the following command:
 ```
-generate-train-vali-splits -s 20 /nas/team-space/experiments/turn_restrictions/synthetic-signs/dataset-02-11-2019-200K/multiclass.csv
+generate-train-vali-splits -s 20 experiments/signfeld-dataset/multiclass.csv
 ```
 This command splits off 20% (specified by ``-s 20``) of the dataset for validation and uses the rest for training. The following two files contain the data splits:
 ```
-<exp_folder>/multiclass_train.csv
-<exp_folder>/multiclass_valid.csv
+ls experiments/signfeld-dataset/multiclass_train.csv
+ls experiments/signfeld-dataset/multiclass_valid.csv
 ```
 
 ## :bullettrain_side: Train a model
 
 Use the script [train-synthetic-sign-detector](bin/train-synthetic-sign-detector) to train a model:
 ```
-usage: train-synthetic-sign-detector [-h] [--config-file FILE] [--resume]
-                                     [--eval-only] [--num-gpus NUM_GPUS]
-                                     [--num-machines NUM_MACHINES]
-                                     [--machine-rank MACHINE_RANK]
-                                     [--dist-url DIST_URL]
-                                     [--label-map LABEL_MAP] --train-csv
-                                     TRAIN_CSV [--valid-csv VALID_CSV]
-                                     ...
 Detectron2 Training
 
 positional arguments:
@@ -186,29 +166,26 @@ Following previous sections, we may use the following commands to train a Retina
 ```
 train-synthetic-sign-detector --config-file resources/configs/signs_169_retinanet_R_50_FPN_3x.yaml \
                               --label-map=resources/labels/synthetic-signs-169.yaml \
-                              --train-csv=<exp_folder>/multiclass_train.csv \
-                              --valid-csv=<exp_folder>/multiclass_valid.csv \
-                              OUTPUT_DIR data-retinanet-02-11-2019-200K
+                              --train-csv=experiments/signfeld-dataset/multiclass_train.csv \
+                              --valid-csv=experiments/signfeld-dataset/multiclass_valid.csv \
+                              OUTPUT_DIR experiments/signfeld-dataset/logs
 ```
 The configuration file [signs_169_retinanet_R_50_FPN_3x.yaml](resources/configs/signs_169_retinanet_R_50_FPN_3x.yaml) contains model hyperparameters and a configuration of the training process. Note that you must leave the DATASETS section of this configuration file empty when you are training with the provided script. It will be filled out by the trainer itself based on the provided ``--train-csv`` and ``--valid-csv`` arguments. The label map [synthetic-signs-169.yaml](resources/labels/synthetic-signs-169.yaml) contains the mapping from class ID to class name. If you change the template set you can re-generate it using [generate-label-map](bin/generate-label-map).
 
-Training can be monitored using tensboard. Following previous example commands:
+Training can be monitored using tensorboard. Following previous example commands:
 ```
-tensorboard --logdir data-retinanet-02-11-2019-200K
+tensorboard --logdir experiments/signfeld-dataset/logs
 ```
 
 ## :trophy: Evaluation on [GTSDB](http://benchmark.ini.rub.de/?section=gtsdb&subsection=dataset)
 
 Evaluation on the public GTSDB traffic sign detection benchmark follows the following steps: (1) Convert ground truth to an appropriate format, (2) run detector on benchmark images, (3) call evaluation software. The repository contains convenience scripts for these tasks. In the following description we store all evaluation data in a folder ``/tmp/gtsdb-evaluation``. This is not a specific requirement and you may change this location to something different.
 
-### :gem: Convert ground truth
+### :raising_hand: Convert ground truth
 
-The GTSDB dataset is stored on our NAS in ``/nas/3rd_party/FullIJCNN2013/``. This folder contains images in ``PPM`` format as well as the ground truth annotation in ``gt.txt``. Use the following command to convert the dataset ground truth:
+Download [GTSDB](http://benchmark.ini.rub.de/?section=gtsdb&subsection=news) dataset. This dataset contains images in ``PPM`` format as well as the ground truth annotation in ``gt.txt``. Use the following command to convert the dataset ground truth:
 ```
-convert-gtsdb \
-    --gtsdb-label-map=resources/labels/gtsdb-label-to-name.yaml \
-    /nas/3rd_party/FullIJCNN2013/gt.txt \
-    /tmp/gtsdb-evaluation/groundtruth
+convert-gtsdb --gtsdb-label-map=resources/labels/gtsdb-label-to-name.yaml  <path_to_gtsdb>/FullIJCNN2013/gt.txt /tmp/gtsdb-evaluation/groundtruth
 ```
 The file [gtsdb-label-to-name.ymal](resources/labels/gtsdb-label-to-name.yaml) contains the mapping from GTSDB class ID to class name as it is used in the synthetic signs dataset.
 
@@ -216,12 +193,12 @@ The file [gtsdb-label-to-name.ymal](resources/labels/gtsdb-label-to-name.yaml) c
 
 Use the script [detect-synthetic-signs](bin/detect-synthetic-signs) to generate detections on GTSDB images. Following previous example commands the call would look as follows.
 ```
-detect-synthetic-signs --images=<path to GTSB folder>/*.ppm \
+detect-synthetic-signs --images=<path_to_gtsdb>/*.ppm \
                        --label-map=resources/labels/synthetic-signs-169.yaml \
                        --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
-                       --config=data-retinanet-02-11-2019-200K/config.yaml \
-                       --weights=data-retinanet-02-11-2019-200K/model_final.pth \
-                       --output_dir=/tmp/gtsdb-evaluation/detections-retinanet-02-11-2019-200K
+                       --config=experiments/signfeld-dataset/logs/config.yaml \
+                       --weights=experiments/signfeld-dataset/logs/model_final.pth \
+                       --output_dir=/tmp/gtsdb-evaluation/detections-signfeld
 ```
 In addition to the detectors configuration (``--config``), weights (``--weights``) and label map (``--label-map``), we also supply the label map of the GTSDB dataset (``--target-label-map``). By supplying a target label map, the script suppresses all detections which are of a class which is not part of the GTSDB dataset. Otherwise, they would be counted as false alarms during evaluation.
 
@@ -234,15 +211,10 @@ unzip Object-Detection-Metrics-v0.2.zip
 ```
 Now call the software to evaluate detections against ground truth. The script prints per-class AP and mean average precision according to Pascal VOC metrics.
 ```
-python Object-Detection-Metrics-0.2/pascalvoc.py \
-    -gt /tmp/gtsdb-evaluation/groundtruth \
-    -det /tmp/gtsdb-evaluation/detections-retinanet-02-11-2019-200K \
-    -gtformat xyrb \
-    -detformat xyrb \
-    -np
+python Object-Detection-Metrics-0.2/pascalvoc.py -gt /tmp/gtsdb-evaluation/groundtruth -det /tmp/gtsdb-evaluation/detections-retinanet-02-11-2019-200K -gtformat xyrb -detformat xyrb -np
 ```
 
-### :tv: Visualize results.
+### :tv: Visualise results.
 
 The repository contains a [script](bin/visualize-synthetic-sign-detections) to visualise detection results. For the data generated in this section, call it as follows:
 ```
