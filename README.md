@@ -4,11 +4,11 @@
 
 This repository collates our efforts on generating traffic sign detection model in low sample regimes (with little to no human annotations). We leverage templates of known traffic signs to train our detector.
 
-## Installation
+## :computer: Installation
 
 You can either install the code in a virtual environment or docker. Use the docker if you want a reproducable environment.
 
-### Using Conda (virtual environment)
+### :snake: Using Conda (virtual environment)
 
 First, create a virtual environment:
 ```
@@ -22,7 +22,7 @@ pip install .           # If you only want to generate a dataset.
 pip install .[trainer]  # If you also want to train a model.
 ```
 
-### Using docker
+### :whale: Using docker
 
 The following two commands install and run the docker image:
 ```
