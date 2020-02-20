@@ -11,10 +11,10 @@ This repository collates our efforts on generating traffic sign detection model 
   - [Conda](#snake-conda) or [Docker](#whale-docker)
 * [Inference only](#tada-usage)
 * [Training](#training)
-  - [Templates](https://github.com/moabitcoin/cherry-pytorch/blob/master/cherry/README.md)
-  - [Synthetic data gen](https://github.com/moabitcoin/cherry-pytorch/blob/master/cherry/README.md)
-  - [Detectron training](https://github.com/moabitcoin/cherry-pytorch/blob/master/cherry/README.md)
-* [Evaluation](https://github.com/moabitcoin/cherry-pytorch/blob/master/cherry/README.md)
+  - [Neutral images](https://github.com/moabitcoin/Signfeld/blob/master/docs/download.md)
+  - [Synthetic data gen](https://github.com/moabitcoin/Signfeld/blob/master/docs/datagen.md)
+  - [Detectron training](https://github.com/moabitcoin/Signfeld/blob/master/docs/train.md)
+* [Evaluation](https://github.com/moabitcoin/Signfeld/blob/master/docs/evaluate.md)
 ## :computer: Installation
 
 You can either install the code in a virtual environment or docker. Use the docker if you want a reproducable environment.
@@ -40,7 +40,6 @@ The following two commands install and run the docker image:
 make docker-install
 make docker-run
 ```
-
 ### :tada: Sample usage
 
 ## :rabbit2: Pre-trained German Traffic Sign Model
