@@ -48,7 +48,7 @@ make docker-run
 Download the pre-trained models from [here]() at `pretrained_models/retinanet`.
 
 ```
-detect-synthetic-signs --images=<path to test images> \
+detect-synthetic-signs --images=synthetic_signs/images \
                        --label-map=resources/labels/synthetic-signs-169.yaml \
                        --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
                        --config=pretrained_models/retinanet/config.yaml \
