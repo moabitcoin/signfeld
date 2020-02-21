@@ -41,3 +41,5 @@ generate-synthetic-dataset --backgrounds=synthetic_signs/external/lists/Building
                            --max-images=200000 \
                            --augmentations=resources/configs/augmentations.yaml
 ```
+
+Sample training images can be found [here](https://github.com/moabitcoin/Signfeld/blob/master/docs/images.md)
