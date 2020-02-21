@@ -1,6 +1,6 @@
 ## German Traffic Sign Templates
 
-Sample traffic sign templates.
+Sample traffic sign templates [5/169]. Human readable version sign name are [here](https://github.com/moabitcoin/Signfeld/blob/master/resources/labels/gtsdb-label-to-name.yaml). This maps a subset of 169 signs available [here](https://github.com/moabitcoin/Signfeld/tree/master/synthetic_signs/templates)
 
 No entry                | One way      | Pedestrian crossing | Stop | Bus stop | Parking |
 :-------------------------|:-------------------------|:-------------------------|:-------------------------|:-----------------------------|:-----------------------------
