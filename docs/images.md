@@ -1,6 +1,10 @@
 ### Sample Training samples
-Left : Model detection + confidence
-Right : Training sample + confidence(100%) since all detections are known
+
+`Left` : Model detection + confidence
+
+`Right` : Training sample + confidence(100%) since all detections are known
+
+Click on the image(s) for a large view.
 
 0                | 1      | 2 | 3 | 4 | 5 |
 :-------------------------|:-------------------------|:-------------------------|:-------------------------|:-----------------------------|:-----------------------------
