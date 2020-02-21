@@ -47,13 +47,22 @@ make docker-run
 
 Download the pre-trained models from [here]() at `resources/models/retinanet`.
 
+#### Detection
 ```
-detect-synthetic-signs --images=synthetic_signs/images \
+detect-synthetic-signs --images=synthetic_signs/images/*.ppm \
                        --label-map=resources/labels/synthetic-signs-169.yaml \
                        --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
                        --config=resources/models/retinanet/config.yaml \
                        --weights=resources/models/retinanet/model_final.pth \
                        --output_dir=/tmp/signfeld
+```
+#### Visualisation
+```
+visualize-synthetic-sign-detections --images=synthetic_signs/images/*.ppm \
+                                    --template-dir=synthetic_signs/templates \
+                                    --detections=/tmp/signfeld \
+                                    --destination=/tmp/signfeld-viz \
+                                    --min-confidence=0.5
 ```
 
 ### :rabbit2: German Traffic Signs
