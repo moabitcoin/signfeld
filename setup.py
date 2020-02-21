@@ -38,4 +38,9 @@ setup(
         "torchvision>=0.4.1",
         "pycocotools @ git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI",
         "detectron2 @ git+https://github.com/facebookresearch/detectron2.git",
-    ], ))
+    ], inference=[
+        "torch>=1.3.0",
+        "torchvision>=0.4.1",
+        "pycocotools @ git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI",
+        "detectron2 @ git+https://github.com/facebookresearch/detectron2.git",
+    ]))

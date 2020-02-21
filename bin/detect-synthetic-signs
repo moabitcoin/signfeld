@@ -37,10 +37,11 @@ class ImageDataset(torch.utils.data.Dataset):
 
 
 def main(args):
-  os.makedirs(args.output_dir, exist_ok=False)
+  os.makedirs(args.output_dir, exist_ok=True)
 
   with args.label_map.open() as file_handle:
     id_to_name = yaml.safe_load(file_handle)
+    id_to_name = {k+1: v for k, v in id_to_name.items()}
 
   if args.target_label_map is not None:
     with args.target_label_map.open() as file_handle:
@@ -57,6 +58,7 @@ def main(args):
   predictor = DefaultPredictor(cfg)
 
   image_filenames = glob.glob(args.images)
+  print('Found {} images'.format(len(image_filenames)))
   dataset = ImageDataset(image_filenames)
   dataloader = torch.utils.data.DataLoader(dataset,
                                            batch_size=BATCH_SIZE,
@@ -79,6 +81,7 @@ def main(args):
         class_name = id_to_name.get(classes[i].item(), None)
         if class_name is None:
           print("WARNING: Unknown class {}".format(classes[i]))
+          class_name = 'UNK'
 
         ignore_class = (target_classnames is not None
                         and class_name not in target_classnames)

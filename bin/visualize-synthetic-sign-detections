@@ -91,26 +91,34 @@ def annotate_template_image(image, template_bgra, x0, y0, x1, y1):
   template_bgra, offset = synthetic_signs.utils.clip_image_at_border(
       template_bgra, image.shape[:2], offset)
 
-  image[:, :, :] = synthetic_signs.blending.paste_to(template_bgra[:, :, :3],
-                                                     template_bgra[:, :, 3],
-                                                     image, offset)
+  try:
+
+    image[:, :, :] = synthetic_signs.blending.paste_to(template_bgra[:, :, :3],
+                                                       template_bgra[:, :, 3],
+                                                       image, offset)
+  except Exception as err:
+    return
 
 
 def main(args):
-  os.makedirs(args.destination, exist_ok=False)
+  os.makedirs(args.destination, exist_ok=True)
 
   # Load templates into memory.
   name_to_image = dict()
   if args.template_dir is not None:
     for filepath in args.template_dir.iterdir():
-      image_bgra = cv2.imread(str(filepath), cv2.IMREAD_UNCHANGED)
-      assert image_bgra.ndim == 3 and image_bgra.shape[-1] == 4
 
-      image_bgra, _ = synthetic_signs.utils.remove_padding(
-          image_bgra, image_bgra[:, :, 3])
+      try:
+        image_bgra = cv2.imread(str(filepath), cv2.IMREAD_UNCHANGED)
+        assert image_bgra.ndim == 3 and image_bgra.shape[-1] == 4
 
-      name, _ = os.path.splitext(filepath.name)
-      name_to_image[name] = image_bgra
+        image_bgra, _ = synthetic_signs.utils.remove_padding(
+            image_bgra, image_bgra[:, :, 3])
+
+        name, _ = os.path.splitext(filepath.name)
+        name_to_image[name] = image_bgra
+      except Exception as err:
+        print('Not an image template {}'.format(filepath))
 
   # Process each image in the glob pattern.
   image_filenames = sorted(glob.glob(args.images))

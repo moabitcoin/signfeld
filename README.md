@@ -32,8 +32,9 @@ conda install pip
 ```
 Then install dependencies and software:
 ```
-pip install .           # If you only want to generate a dataset.
-pip install .[trainer]  # If you also want to train a model.
+pip install .            # If you only want to generate a dataset.
+pip install .[inference] # Include Inference
+pip install .[trainer]   # Include Model training
 ```
 
 ### :whale: Docker
@@ -49,16 +50,16 @@ Download the pre-trained models from [here]() at `resources/models/retinanet`.
 
 #### Detection
 ```
-detect-synthetic-signs --images=synthetic_signs/images/*.ppm \
+detect-synthetic-signs --images=synthetic_signs/images/*.jpeg \
                        --label-map=resources/labels/synthetic-signs-169.yaml \
                        --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
                        --config=resources/models/retinanet/config.yaml \
                        --weights=resources/models/retinanet/model_final.pth \
-                       --output_dir=/tmp/signfeld
+                       --output-dir=/tmp/signfeld
 ```
 #### Visualisation
 ```
-visualize-synthetic-sign-detections --images=synthetic_signs/images/*.ppm \
+visualize-synthetic-sign-detections --images=synthetic_signs/images/*.jpeg \
                                     --template-dir=synthetic_signs/templates \
                                     --detections=/tmp/signfeld \
                                     --destination=/tmp/signfeld-viz \
