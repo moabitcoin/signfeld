@@ -8,7 +8,7 @@
 
 This repository collates our efforts on building traffic sign detection model in low (to zero) sample regimes (with little to no human annotations). We leverage templates of known traffic signs to train our detector. We married the ideas of [synthetic text](https://github.com/ankush-me/SynthText) & [object detection](https://github.com/LCAD-UFES/publications-tabelini-ijcnn-2019) for this work to bear fruit.
 
-# Table of Contents
+# :feet: Table of Contents
 * [Installation](#computer-installation)
   - [Conda](#snake-conda) or [Docker](#whale-docker)
 * [Inference only](#tada-usage)
@@ -56,9 +56,14 @@ detect-synthetic-signs --images=synthetic_signs/images \
                        --output_dir=/tmp/signfeld
 ```
 
-## :rabbit2: Pre-trained German Traffic Sign Model
+### :rabbit2: German Traffic Signs
 Trained models are include in the repository [Calzone].
 
 | Name    | Description                                | GTSDB mAP | Remarks                                 |
 | ---     | ---                                        | ---       | ---                                     |
 | Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : resources/models/retinanet   |
+
+### :squirrel: Contributors
+- [Daniel](https://github.com/daniel-j-h)
+- [Nicolai](https://www.github.com/nwojke)
+- [Harsimrat](https://github.com/sandhawalia)
