@@ -54,7 +54,7 @@ Download the pre-trained model(.pth) from [here](https://github.com/moabitcoin/S
 
 #### Detection
 ```
-detect-synthetic-signs --images=synthetic_signs/images/test_samples/*.jpeg \
+detect-synthetic-signs --images=synthetic_signs/images/test_samples/*.jpg \
                        --label-map=resources/labels/labels-DE-169.yaml \
                        --config=resources/models/DE-signs-169.yaml \
                        --weights=resources/models/DE-signs-169.pth \
@@ -62,7 +62,7 @@ detect-synthetic-signs --images=synthetic_signs/images/test_samples/*.jpeg \
 ```
 #### Visualisation
 ```
-visualize-synthetic-sign-detections --images=synthetic_signs/images/test_samples/*.jpeg \
+visualize-synthetic-sign-detections --images=synthetic_signs/images/test_samples/*.jpg \
                                     --template-dir=synthetic_signs/templates \
                                     --detections=/tmp/signfeld \
                                     --destination=/tmp/signfeld-viz \
