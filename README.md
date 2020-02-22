@@ -50,7 +50,7 @@ make docker-run
 ```
 ### :tada: Usage
 
-Download the pre-trained models from [here]() at `resources/models`.
+Download the pre-trained model(.pth) from [here]() at `resources/models`.
 
 #### Detection
 ```
