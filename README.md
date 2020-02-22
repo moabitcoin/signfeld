@@ -50,15 +50,15 @@ make docker-run
 ```
 ### :tada: Usage
 
-Download the pre-trained models from [here]() at `resources/models/retinanet`.
+Download the pre-trained models from [here]() at `resources/models`.
 
 #### Detection
 ```
 detect-synthetic-signs --images=synthetic_signs/images/test_samples/*.jpeg \
                        --label-map=resources/labels/synthetic-signs-169.yaml \
                        --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
-                       --config=resources/models/retinanet/config.yaml \
-                       --weights=resources/models/retinanet/model_final.pth \
+                       --config=resources/models/german-signs-169.yaml \
+                       --weights=resources/models/german-signs-169.pth \
                        --output-dir=/tmp/signfeld
 ```
 #### Visualisation
