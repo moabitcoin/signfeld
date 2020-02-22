@@ -50,7 +50,7 @@ make docker-run
 ```
 ### :tada: Usage
 
-Download the pre-trained model(.pth) from [here]() at `resources/models`.
+Download the pre-trained model(.pth) from [here](https://github.com/moabitcoin/Signfeld/releases/download/v1.0/DE-signs-169.pth) at `resources/models`.
 
 #### Detection
 ```
@@ -77,7 +77,7 @@ Trained models are include in the repository [Calzone]. Evaluated on [GTSDB](htt
 
 | Name    | Description                                | GTSDB mAP | Remarks                                 |
 | ---     | ---                                        | ---       | ---                                     |
-| Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : [download]()                 |
+| Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : [download](https://github.com/moabitcoin/Signfeld/releases/download/v1.0/DE-signs-169.pth)                 |
 
 ### :squirrel: Contributors
 - [Daniel](https://github.com/daniel-j-h)
