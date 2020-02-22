@@ -56,7 +56,6 @@ Download the pre-trained models from [here]() at `resources/models`.
 ```
 detect-synthetic-signs --images=synthetic_signs/images/test_samples/*.jpeg \
                        --label-map=resources/labels/labels-DE-169.yaml \
-                       --target-label-map=resources/labels/gtsdb-label-map.yaml \
                        --config=resources/models/DE-signs-169.yaml \
                        --weights=resources/models/DE-signs-169.pth \
                        --output-dir=/tmp/signfeld
