@@ -58,7 +58,7 @@ optional arguments:
 Following previous sections, we may use the following commands to train a RetinaNet detector on the generated data:
 ```
 train-synthetic-sign-detector --config-file resources/configs/signs_169_retinanet_R_50_FPN_3x.yaml \
-                              --label-map=resources/labels/synthetic-signs-169.yaml \
+                              --label-map=resources/labels/labels-DE-169.yaml \
                               --train-csv=experiments/synthetic-signfeld-dataset/multiclass_train.csv \
                               --valid-csv=experiments/synthetic-signfeld-dataset/multiclass_valid.csv \
                               OUTPUT_DIR experiments/synthetic-signfeld-dataset/logs

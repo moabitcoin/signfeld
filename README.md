@@ -55,10 +55,10 @@ Download the pre-trained models from [here]() at `resources/models`.
 #### Detection
 ```
 detect-synthetic-signs --images=synthetic_signs/images/test_samples/*.jpeg \
-                       --label-map=resources/labels/synthetic-signs-169.yaml \
-                       --target-label-map=resources/labels/gtsdb-label-to-name.yaml \
-                       --config=resources/models/german-signs-169.yaml \
-                       --weights=resources/models/german-signs-169.pth \
+                       --label-map=resources/labels/labels-DE-169.yaml \
+                       --target-label-map=resources/labels/gtsdb-label-map.yaml \
+                       --config=resources/models/DE-signs-169.yaml \
+                       --weights=resources/models/DE-signs-169.pth \
                        --output-dir=/tmp/signfeld
 ```
 #### Visualisation
