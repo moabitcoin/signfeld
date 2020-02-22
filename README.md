@@ -4,7 +4,9 @@
 
 `"Jerry, just remember, it's not a lie if you believe it."`- George Costanza (Seinfeld), Circa July 5, 1989
 
-<a href="url"><img src="https://github.com/moabitcoin/Signfeld/blob/master/synthetic_signs/images/results/frame-000547.jpg" align="center" width="512" ></a>
+<p align="center">
+  <img src="https://github.com/moabitcoin/Signfeld/blob/master/synthetic_signs/images/results/frame-000547.jpg" width="512">
+</p>
 
 ## :no_bicycles: Synthetic traffic sign detection
 
