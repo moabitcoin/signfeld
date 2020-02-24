@@ -1,6 +1,6 @@
 ### :traffic_light: Create training and validation splits
 
-Special care must be taken when splitting the data into training and validation sets because the dataset generator creates multiple images of the same synthetic sign composition (using a different blending mode for each image). Simply randomizing and splitting the data could cause the same composition to end up in both sets. The script [generate-train-val-splits](bin/generate-train-val-splits) makes sure this doesn't happen:
+Special care must be taken when splitting the data into training and validation sets because the dataset generator creates multiple images of the same synthetic sign composition (using a different blending mode for each image). Simply randomizing and splitting the data could cause the same composition to end up in both sets. The script [generate-train-val-splits](https://github.com/moabitcoin/Signfeld/blob/master/bin/generate-train-val-splits) makes sure this doesn't happen:
 ```
 usage: generate-train-val-splits [-h] [-s S] csv_datafile
 
@@ -23,7 +23,7 @@ ls experiments/synthetic-signfeld-dataset/multiclass_valid.csv
 
 ## :bullettrain_side: Train a model
 
-Use the script [train-synthetic-sign-detector](bin/train-synthetic-sign-detector) to train a model:
+Use the script [train-synthetic-sign-detector](https://github.com/moabitcoin/Signfeld/blob/master/bin/train-synthetic-sign-detector) to train a model:
 ```
 Detectron2 Training
 
@@ -63,7 +63,7 @@ train-synthetic-sign-detector --config-file resources/configs/signs_169_retinane
                               --valid-csv=experiments/synthetic-signfeld-dataset/multiclass_valid.csv \
                               OUTPUT_DIR experiments/synthetic-signfeld-dataset/logs
 ```
-The configuration file [signs_169_retinanet_R_50_FPN_3x.yaml](resources/configs/signs_169_retinanet_R_50_FPN_3x.yaml) contains model hyperparameters and a configuration of the training process. Note that you must leave the DATASETS section of this configuration file empty when you are training with the provided script. It will be filled out by the trainer itself based on the provided ``--train-csv`` and ``--valid-csv`` arguments. The label map [synthetic-signs-169.yaml](resources/labels/synthetic-signs-169.yaml) contains the mapping from class ID to class name. If you change the template set you can re-generate it using [generate-label-map](bin/generate-label-map).
+The configuration file [signs_169_retinanet_R_50_FPN_3x.yaml](https://github.com/moabitcoin/Signfeld/blob/master/resources/configs/signs_169_retinanet_R_50_FPN_3x.yaml) contains model hyperparameters and a configuration of the training process. Note that you must leave the DATASETS section of this configuration file empty when you are training with the provided script. It will be filled out by the trainer itself based on the provided ``--train-csv`` and ``--valid-csv`` arguments. The label map [synthetic-signs-169.yaml](https://github.com/moabitcoin/Signfeld/blob/master/resources/labels/synthetic-signs-169.yaml) contains the mapping from class ID to class name. If you change the template set you can re-generate it using [generate-label-map](https://github.com/moabitcoin/Signfeld/blob/master/bin/generate-label-map).
 
 Training can be monitored using tensorboard. Following previous example commands:
 ```

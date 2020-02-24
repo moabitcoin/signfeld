@@ -8,11 +8,11 @@ Download [GTSDB](http://benchmark.ini.rub.de/?section=gtsdb&subsection=news) dat
 ```
 convert-gtsdb --gtsdb-label-map=resources/labels/gtsdb-label-to-name.yaml  <path_to_gtsdb>/FullIJCNN2013/gt.txt /tmp/gtsdb-evaluation/groundtruth
 ```
-The file [gtsdb-label-to-name.ymal](resources/labels/gtsdb-label-to-name.yaml) contains the mapping from GTSDB class ID to class name as it is used in the synthetic signs dataset.
+The file [gtsdb-label-to-name.ymal](https://github.com/moabitcoin/Signfeld/blob/master/resources/labels/gtsdb-label-to-name.yaml) contains the mapping from GTSDB class ID to class name as it is used in the synthetic signs dataset.
 
 ### Run detector on benchmark
 
-Use the script [detect-synthetic-signs](bin/detect-synthetic-signs) to generate detections on GTSDB images. Following previous example commands the call would look as follows.
+Use the script [detect-synthetic-signs](https://github.com/moabitcoin/Signfeld/blob/master/bin/detect-synthetic-signs) to generate detections on GTSDB images. Following previous example commands the call would look as follows.
 ```
 detect-synthetic-signs --images=<path_to_gtsdb>/*.ppm \
                        --label-map=resources/labels/synthetic-signs-169.yaml \
@@ -37,7 +37,7 @@ python Object-Detection-Metrics-0.2/pascalvoc.py -gt /tmp/gtsdb-evaluation/groun
 
 ### :tv: Visualise results.
 
-The repository contains a [script](bin/visualize-synthetic-sign-detections) to visualise detection results. For the data generated in this section, call it as follows:
+The repository contains a [script](https://github.com/moabitcoin/Signfeld/blob/master/bin/visualize-synthetic-sign-detections) to visualise detection results. For the data generated in this section, call it as follows:
 ```
 visualize-synthetic-sign-detections --images=<path to GTSB folder>/*.ppm \
                                     --template-dir=synthetic-signs/templates \

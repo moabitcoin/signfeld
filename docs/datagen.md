@@ -4,7 +4,7 @@ A subset of the near complete [list](https://de.wikipedia.org/wiki/Bildtafel_der
 
 ## :factory: Generate synthetic data
 
-Use [generate-synthetic-dataset](bin/generate-synthetic-dataset) to generate a synthetic sign dataset:
+Use [generate-synthetic-dataset](https://github.com/moabitcoin/Signfeld/blob/master/bin/generate-synthetic-dataset) to generate a synthetic sign dataset:
 ```
 optional arguments:
   -h, --help            show this help message and exit
@@ -32,7 +32,7 @@ optional arguments:
                         If not None (or empty string), image shape
                         'height, width'
 ```
-The following example generates a dataset of 2M images. The file [augmentations.yaml](resources/configs/augmentations.yaml) specifies augmentation parameters (geometric template distortion, blending methods, etc.). Refer to the documentation of ``generate_task_args()`` in [synthetic_signs.dataset_generator](synthetic_signs/dataset_generator.py#268) for a parameter description.
+The following example generates a dataset of 2M images. The file [augmentations.yaml](https://github.com/moabitcoin/Signfeld/blob/master/resources/configs/augmentations.yaml) specifies augmentation parameters (geometric template distortion, blending methods, etc.). Refer to the documentation of ``generate_task_args()`` in [synthetic_signs.dataset_generator](https://github.com/moabitcoin/Signfeld/blob/master/synthetic_signs/dataset_generator.py#268) for a parameter description.
 ```
 generate-synthetic-dataset --backgrounds=synthetic_signs/external/lists/Building_without_signs.list \
                            --templates-path=synthetic_signs/templates \
