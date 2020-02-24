@@ -6,7 +6,7 @@
 
 ## :no_bicycles: Synthetic traffic sign detection
 
-This repository collates our efforts on building traffic sign detection model in low (to zero) sample regime (with little to no human annotations). We leverage templates of known traffic signs to train our detector. We married the ideas of [synthetic text](https://github.com/ankush-me/SynthText) & [object detection](https://github.com/LCAD-UFES/publications-tabelini-ijcnn-2019) for this work to bear fruit. We provide a pre-trained traffic sign detection model trained on [169 German Traffic sign(s)](https://github.com/moabitcoin/Signfeld/blob/master/synthetic_signs/templates/signs.md)
+This repository collates our efforts on building traffic sign detection model in low (to zero) sample regime (with little to no human annotations). We leverage templates of known traffic signs to train our detector. We married the ideas of [synthetic text](https://github.com/ankush-me/SynthText) & [object detection](https://github.com/LCAD-UFES/publications-tabelini-ijcnn-2019) for this work to bear fruit. We provide a pre-trained traffic sign detection model trained on [169 German Traffic sign(s)](https://github.com/moabitcoin/Signfeld/blob/master/synthetic_signs/templates/signs.md). Sample [results](https://github.com/moabitcoin/Signfeld/blob/master/docs/images.md#sample-results)
 
 <p align="center">
   <img src="https://github.com/moabitcoin/Signfeld/blob/master/synthetic_signs/images/results/frame-000547.jpg">
