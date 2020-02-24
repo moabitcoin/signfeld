@@ -45,4 +45,3 @@ Click on the image(s) for a large view.
 <table><tr><td>
 <img src="https://github.com/moabitcoin/Signfeld/blob/master/synthetic_signs/images/results/frame-001413.jpg" width="960">
 </td></tr></table>
-<table><tr><td>
