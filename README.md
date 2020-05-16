@@ -79,7 +79,7 @@ Trained models are include in the repository [Calzone]. Evaluated on [GTSDB](htt
 | ---     | ---                                        | ---       | ---                                     |
 | Calzone | Detector: RetinaNet, backbone: ResNet 50   | 67.23     | Location : [download](https://github.com/moabitcoin/Signfeld/releases/download/v1.0/DE-signs-169.pth)                 |
 
-### :squirrel: Contributors
+### :alien: Contributors
 - [Daniel](https://github.com/daniel-j-h)
 - [Nicolai](https://www.github.com/nwojke)
 - [Harsimrat](https://github.com/sandhawalia)
